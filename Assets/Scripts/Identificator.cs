@@ -13,7 +13,6 @@ public class Identificator : MonoBehaviour {
         sectors = GetComponentsInChildren<Transform>();
     }
 
-
     public void ApplyColor(Color color)
     {
         foreach(Transform sector in sectors)
@@ -22,7 +21,7 @@ public class Identificator : MonoBehaviour {
         }
     }
 
-    public void TurnSectors(float value)
+    public void SwitchSectors(float value)
     {
         if(value != 0)
             for(int i = (int)(value * 4)+1; i < sectors.Length; i++)

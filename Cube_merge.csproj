@@ -94,7 +94,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\CubeStructure.cs" />
-    <Compile Include="Assets\Scripts\Gaming.cs" />
+    <Compile Include="Assets\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\Identificator.cs" />
     <Compile Include="Assets\Scripts\Navigation.cs" />
   </ItemGroup>

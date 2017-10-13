@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-//Like Vector3, but with other names of fields
+//Like Vector3(nearly..), but with other names of fields
 public class Address3
 {
     public int Side;
@@ -17,14 +17,6 @@ public class Address3
     }
 }
 
-
-public static class SomeValues
-{
-    public static int Rows = 4;
-    public static int Cols = 4;
-}
-
-
 public static class ItCube
 {
     public static ItSide[] sides = new ItSide[6];    
@@ -32,25 +24,13 @@ public static class ItCube
 
 public class ItSide
 {
-    public ItFragment[,] fragments = new ItFragment[SomeValues.Rows, SomeValues.Cols];
+    public ItFragment[,] fragments = new ItFragment[GameManager.SomeValues.SideSize, GameManager.SomeValues.SideSize];
 }
 
 public class ItFragment
 {
-    public GameObject gameobject = new GameObject();
-    public Color color = new Color(0.5f, 0.6f, 0.6f);
-    //public Color color = new Color(Random.Range(0.2f, 0.8f), Random.Range(0.2f, 0.8f), Random.Range(0.2f, 0.8f));
-    public float value = 0;
+    public GameObject gameobject = new GameObject(); //Object on scene
+    public Color color = GameManager.SomeValues.DefaultColor; //Color of fragment
+    public float value = 0; //Value of fragment(0.25 / 0.5 / 1)
     public Address3 address; //Address of fragment in Cube Massive
-}
-
-public static class Colors
-{
-    private static Color[] variants = new Color[] {new Color(0.1f, 0.1f, 0.1f), new Color(0.8f, 0.8f, 0.8f), new Color(0.8f, 0f, 0f), new Color(0, 0.8f, 0), new Color(0, 0, 0.8f), new Color(0.8f, 0.8f, 0)};
-
-    public  static Color RandomColor()
-    {
-        return variants[Random.Range(0, variants.Length)];
-    }
-
 }
