@@ -12,8 +12,6 @@ public class Navigation : MonoBehaviour {
 
     private bool Selected = false;
 
-    [SerializeField] UnityEngine.UI.Text text;
-
     void Start()
     {
         Halo = Instantiate(Resources.Load("Halo")) as GameObject;        
@@ -56,8 +54,6 @@ public class Navigation : MonoBehaviour {
             }
             Halo.transform.position = currentTransform.position;
             Halo.transform.rotation = currentTransform.rotation;
-
-            text.text = currentTransform.GetComponent<Identificator>().address.Side + "|" + currentTransform.GetComponent<Identificator>().address.Row + "|" + currentTransform.GetComponent<Identificator>().address.Col;
         }
 
 
@@ -76,5 +72,14 @@ public class Navigation : MonoBehaviour {
         }
         else
             gameManager.Draw();
+    }
+
+    public void MagicButton()
+    {
+        if (Magic.MagicNow(currentTransform.GetComponent<Identificator>().address))
+        {
+            Selected = false;
+            gameManager.Draw();
+        }
     }
 }

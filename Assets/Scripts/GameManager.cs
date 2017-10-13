@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour {
-    
-    //Some default\changeable base values
+
+    //Some base values
     public static class SomeValues
     {
         public static int SideSize = 4;
@@ -33,8 +33,7 @@ public class GameManager : MonoBehaviour {
         position[3] = new Vector3(0.5f, 0, 0);      rotation[3] = new Vector3(0, 90, 0);
         position[4] = new Vector3(0, -0.5f, 0);     rotation[4] = new Vector3(90, 0, 0);
         position[5] = new Vector3(0, 0.5f, 0);      rotation[5] = new Vector3(90, 0, 0);
-
-
+        
         //Fill Cube
         for (int k = 0; k < ItCube.sides.Length; k++)
         {
@@ -138,6 +137,8 @@ public class GameManager : MonoBehaviour {
         ItCube.sides[InLine[0].Side].fragments[InLine[0].Row, InLine[0].Col].color = ItCube.sides[InLine[2].Side].fragments[InLine[2].Row, InLine[2].Col].color = SomeValues.DefaultColor;
 
         CheckForMergeReady(InLine[1]);
+        
+        Magic.MagicHere(InLine[1]);
     }
 
     private static bool CheckForMergeReady(Address3 address)
@@ -167,7 +168,7 @@ public class GameManager : MonoBehaviour {
             InLine[f] = ItCube.sides[InLine[0].Side].fragments[InLine[0].Row, i].address;
             f++;
         }
-        if (InLine[2] != null) //Check for full line
+        if (InLine[InLine.Length-1] != null) //Check for full line
         {
             Merge(InLine);
             WasMerged = true;
@@ -189,7 +190,7 @@ public class GameManager : MonoBehaviour {
             InLine[f] = ItCube.sides[InLine[0].Side].fragments[i, InLine[0].Col].address;
             f++;
         }
-        if (InLine[2] != null) //Check for full line
+        if (InLine[InLine.Length - 1] != null) //Check for full line
         {
             Merge(InLine);
             WasMerged = true;
@@ -204,9 +205,20 @@ public class GameManager : MonoBehaviour {
         {
             if (fragment.value < 1 || fragment.color != ItCube.sides[address.Side].fragments[address.Row,address.Col].color) return;
         }
-
-        Debug.Log("Removing color: " + ItCube.sides[address.Side].fragments[0, 0].color);
         lColors.Remove(ItCube.sides[address.Side].fragments[0, 0].color);
+
+        if (lColors.Count == 0) GameEnd.enabled = true;
+    }
+
+    [SerializeField] private static Canvas GameEnd;
+    public void Restart()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Main_Scene");
     }
     
+    public void GoToSettings()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Settings");
+    }
+
 }
