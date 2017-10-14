@@ -46,7 +46,6 @@ public class Magic : MonoBehaviour {
         {
             MagicsCount++;
             PointsToGetMagic = 0;
-            Debug.Log("MagicUp: " + MagicsCount);
         }
     }
 
@@ -56,6 +55,7 @@ public class Magic : MonoBehaviour {
         {
             ItCube.sides[address.Side].fragments[address.Row, address.Col].value = 1;
             MagicsCount--;
+            GameManager.AfterMagic(address);
             return true;
         }
         return false;

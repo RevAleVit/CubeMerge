@@ -5,13 +5,13 @@ using UnityEngine;
 public class Settings : MonoBehaviour {
     private void Start()
     {
-        GameManager.SomeValues.StartFrom = 0.25f;
+        SomeValues.StartFrom = 0.25f;
     }
 
     public void Dificult(UnityEngine.UI.Slider Slider)
     {
-        if (Slider.value == 3) GameManager.SomeValues.StartFrom = 1;
-        else GameManager.SomeValues.StartFrom = Slider.value / 4;
+        if (Slider.value == 3) SomeValues.StartFrom = 1;
+        else SomeValues.StartFrom = Slider.value / 4;
     }
 
     //public void InLineCount(UnityEngine.UI.Slider Slider)

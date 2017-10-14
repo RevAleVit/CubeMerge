@@ -24,13 +24,13 @@ public static class ItCube
 
 public class ItSide
 {
-    public ItFragment[,] fragments = new ItFragment[GameManager.SomeValues.SideSize, GameManager.SomeValues.SideSize];
+    public ItFragment[,] fragments = new ItFragment[SomeValues.SideSize, SomeValues.SideSize];
 }
 
 public class ItFragment
 {
     public GameObject gameobject = new GameObject(); //Object on scene
-    public Color color = GameManager.SomeValues.DefaultColor; //Color of fragment
+    public Color color = SomeValues.DefaultColor; //Color of fragment
     public float value = 0; //Value of fragment(0.25 / 0.5 / 1)
     public Address3 address; //Address of fragment in Cube Massive
 }
