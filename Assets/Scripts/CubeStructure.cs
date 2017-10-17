@@ -22,15 +22,40 @@ public static class ItCube
     public static ItSide[] sides = new ItSide[6];    
 }
 
+[System.Serializable]
 public class ItSide
 {
     public ItFragment[,] fragments = new ItFragment[SomeValues.SideSize, SomeValues.SideSize];
 }
 
+[System.Serializable]
 public class ItFragment
 {
-    public GameObject gameobject = new GameObject(); //Object on scene
-    public Color color = SomeValues.DefaultColor; //Color of fragment
+    public ItFragment()
+    {
+        SetColor(SomeValues.DefaultColor);
+    }
+
     public float value = 0; //Value of fragment(0.25 / 0.5 / 1)
-    public Address3 address; //Address of fragment in Cube Massive
+    
+    private float[] color = new float[3];
+
+    public Color GetColor()
+    {
+        return new Color(color[0], color[1], color[2]);
+    }
+
+    public void SetColor(Color value)
+    {
+        color[0] = value.r;
+        color[1] = value.g;
+        color[2] = value.b;
+    }
+
+    [System.NonSerialized]
+    public GameObject gameobject = new GameObject(); //Object on scene
+
+    //[System.NonSerialized]
+    //public Color color = SomeValues.DefaultColor; //Color of fragment
+
 }

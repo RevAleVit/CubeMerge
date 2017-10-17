@@ -19,75 +19,77 @@ public static class SomeValues
 public class GameManager : MonoBehaviour {
     private static List<Color> lColors;
 
+    private static bool FirstSceneOpen = true;
     // Use this for initialization
     void Start () {
-        Fill();
+        if(!FirstSceneOpen || !SaveLoad.Load())
+            Fill();
+        FirstSceneOpen = false;
         Draw();
 
         lColors = new List<Color>(SomeValues.ColorsList);
     }
 
     private void Fill()
-    {
-        //Set position of sides
-        Vector3[] rotation = new Vector3[6];
-        Vector3[] position = new Vector3[6];
-        position[0] = new Vector3(0, 0, -0.5f);     rotation[0] = new Vector3();
-        position[1] = new Vector3(0, 0, 0.5f);      rotation[1] = new Vector3();
-        position[2] = new Vector3(-0.5f, 0, 0);     rotation[2] = new Vector3(0, 90, 0);
-        position[3] = new Vector3(0.5f, 0, 0);      rotation[3] = new Vector3(0, 90, 0);
-        position[4] = new Vector3(0, -0.5f, 0);     rotation[4] = new Vector3(90, 0, 0);
-        position[5] = new Vector3(0, 0.5f, 0);      rotation[5] = new Vector3(90, 0, 0);
-        
+    {        
         //Fill Cube
         for (int k = 0; k < ItCube.sides.Length; k++)
         {
             ItCube.sides[k] = new ItSide();
-
             //Fill Side
+            for (int i = 0; i < SomeValues.SideSize; i++)
+            {
+                //Fill Row
+                for (int j = 0; j < SomeValues.SideSize; j++)
+                {
+                    ItCube.sides[k].fragments[i, j] = new ItFragment();
+                }
+            }
+        }
+
+        SaveLoad.Save();
+    }
+
+    //Draw cube on scene
+    public void Draw()
+    {
+        //Set position of sides
+        Quaternion[] rotation = new Quaternion[6];
+        Vector3[] position = new Vector3[6];
+        position[0] = new Vector3(0, 0, -0.5f);     rotation[0] = new Quaternion();
+        position[1] = new Vector3(0, 0, 0.5f);      rotation[1] = new Quaternion();
+        position[2] = new Vector3(-0.5f, 0, 0);     rotation[2] = new Quaternion();     rotation[2].eulerAngles = new Vector3(0, 90, 0);
+        position[3] = new Vector3(0.5f, 0, 0);      rotation[3] = new Quaternion();     rotation[3].eulerAngles = new Vector3(0, 90, 0);
+        position[4] = new Vector3(0, -0.5f, 0);     rotation[4] = new Quaternion();     rotation[4].eulerAngles = new Vector3(90, 0, 0);
+        position[5] = new Vector3(0, 0.5f, 0);      rotation[5] = new Quaternion();     rotation[5].eulerAngles = new Vector3(90, 0, 0);
+        
+
+        for (int k  =  0; k < ItCube.sides.Length; k++)
+        {
             for (int i = 0; i < SomeValues.SideSize; i++)
             {
                 //Calculate position of row
                 if (k == 4 || k == 5) position[k].x = i * 0.25f - 0.375f;
                 else position[k].y = i * 0.25f - 0.375f;
 
-                //Fill Row
                 for (int j = 0; j < SomeValues.SideSize; j++)
                 {
-                    ItCube.sides[k].fragments[i, j] = new ItFragment();
-
                     //Calculate position of fragment
                     if (k == 0 || k == 1) position[k].x = j * 0.25f - 0.375f;
                     else position[k].z = j * 0.25f - 0.375f;
 
-                    ItCube.sides[k].fragments[i, j].gameobject.transform.position = position[k];
-                    ItCube.sides[k].fragments[i, j].gameobject.transform.Rotate(rotation[k]);
-                    ItCube.sides[k].fragments[i, j].address = new Address3(k, i, j); //Write address (Side, Row, Col);
+                    //Destroy old object
+                    Destroy(ItCube.sides[k].fragments[i, j].gameobject);
+
+                    //Draw fragment
+                    ItCube.sides[k].fragments[i, j].gameobject = Instantiate(Resources.Load("Fragment"), position[k], rotation[k]) as GameObject;
+                    ItCube.sides[k].fragments[i, j].gameobject.transform.parent = this.transform;
+
+                    //From massive to object on scene
+                    ItCube.sides[k].fragments[i, j].gameobject.GetComponent<Identificator>().address = new Address3(k, i, j);
+                    ItCube.sides[k].fragments[i, j].gameobject.GetComponent<Identificator>().ApplyColor(ItCube.sides[k].fragments[i, j].GetColor());
+                    ItCube.sides[k].fragments[i, j].gameobject.GetComponent<Identificator>().SwitchSectors(ItCube.sides[k].fragments[i, j].value);
                 }
-            }
-        }
-    }
-
-    //Draw cube on scene
-    public void Draw()
-    {
-        foreach (ItSide side in ItCube.sides)
-        {
-            foreach (ItFragment fragment in side.fragments)
-            {
-                //Save position of current fragment
-                Vector3 TempPos = fragment.gameobject.transform.position;
-                Quaternion TempRot = fragment.gameobject.transform.rotation;
-                Destroy(fragment.gameobject); //Destroy old object
-
-                //Draw fragment
-                fragment.gameobject = Instantiate(Resources.Load("Fragment"), TempPos, TempRot) as GameObject;
-                fragment.gameobject.transform.parent = this.transform;
-
-                //From massive to object on scene
-                fragment.gameobject.GetComponent<Identificator>().address = fragment.address;
-                fragment.gameobject.GetComponent<Identificator>().ApplyColor(fragment.color);
-                fragment.gameobject.GetComponent<Identificator>().SwitchSectors(fragment.value);
             }
         }
     }
@@ -98,12 +100,7 @@ public class GameManager : MonoBehaviour {
         ItFragment Temp = ItCube.sides[a.Side].fragments[a.Row,a.Col];
         ItCube.sides[a.Side].fragments[a.Row, a.Col] = ItCube.sides[b.Side].fragments[b.Row, b.Col];
         ItCube.sides[b.Side].fragments[b.Row, b.Col] = Temp;
-
-        //Swap inner addresses
-        Address3 TempA = ItCube.sides[a.Side].fragments[a.Row, a.Col].address;
-        ItCube.sides[a.Side].fragments[a.Row, a.Col].address = ItCube.sides[b.Side].fragments[b.Row, b.Col].address;
-        ItCube.sides[b.Side].fragments[b.Row, b.Col].address = TempA;
-        
+                
         if (CheckForMergeReady(a) || CheckForMergeReady(b)) return true;
         else return false;
         
@@ -125,7 +122,7 @@ public class GameManager : MonoBehaviour {
     public static  void GenerateFragment(Address3 address)
     {
         ItCube.sides[address.Side].fragments[address.Row, address.Col].value = SomeValues.StartFrom;
-        ItCube.sides[address.Side].fragments[address.Row, address.Col].color = lColors[Random.Range(0, lColors.Count)]; //Random color from colors list
+        ItCube.sides[address.Side].fragments[address.Row, address.Col].SetColor(lColors[Random.Range(0, lColors.Count)]);  //Random color from colors list
 
         CheckForMergeReady(address);
     }
@@ -137,10 +134,13 @@ public class GameManager : MonoBehaviour {
 
         //Clear data in other fragments
         ItCube.sides[InLine[0].Side].fragments[InLine[0].Row, InLine[0].Col].value = ItCube.sides[InLine[2].Side].fragments[InLine[2].Row, InLine[2].Col].value = 0;
-        ItCube.sides[InLine[0].Side].fragments[InLine[0].Row, InLine[0].Col].color = ItCube.sides[InLine[2].Side].fragments[InLine[2].Row, InLine[2].Col].color = SomeValues.DefaultColor;
+        ItCube.sides[InLine[0].Side].fragments[InLine[0].Row, InLine[0].Col].SetColor(SomeValues.DefaultColor);
+        ItCube.sides[InLine[2].Side].fragments[InLine[2].Row, InLine[2].Col].SetColor(SomeValues.DefaultColor);
 
         Magic.MagicHere(InLine[1]);
-        CheckForMergeReady(InLine[1]);        
+        CheckForMergeReady(InLine[1]);
+
+        SaveLoad.Save();
     }
 
     private static bool CheckForMergeReady(Address3 address) //return true if some line was merged,false - if not
@@ -156,16 +156,16 @@ public class GameManager : MonoBehaviour {
         Address3[] InLine = new Address3[SomeValues.InLineLength];
 
         //Check first way(vartical\horizontal)
-        InLine[0] = ItCube.sides[address.Side].fragments[address.Row, 0].address;
-        for(int i = 1, f = 1; i < SomeValues.SideSize && f < InLine.Length; i++)
+        InLine[0] = new Address3(address.Side, address.Row, 0);
+        for (int i = 1, f = 1; i < SomeValues.SideSize && f < InLine.Length; i++)
         {
             if(
                 ItCube.sides[InLine[f-1].Side].fragments[InLine[f-1].Row, i].value == 0 || ItCube.sides[InLine[f-1].Side].fragments[InLine[f-1].Row, i].value == 1 ||
-                ItCube.sides[InLine[0].Side].fragments[InLine[0].Row, InLine[0].Col].color != ItCube.sides[InLine[0].Side].fragments[InLine[0].Row, i].color ||                
+                ItCube.sides[InLine[0].Side].fragments[InLine[0].Row, InLine[0].Col].GetColor() != ItCube.sides[InLine[0].Side].fragments[InLine[0].Row, i].GetColor() ||                
                 ItCube.sides[InLine[0].Side].fragments[InLine[0].Row, InLine[0].Col].value != ItCube.sides[InLine[0].Side].fragments[InLine[0].Row, i].value
                 )
                 f = 0;
-            InLine[f] = ItCube.sides[InLine[0].Side].fragments[InLine[0].Row, i].address;
+            InLine[f] = new Address3(address.Side, address.Row, i);
             f++;
         }
         if (InLine[InLine.Length-1] != null) //Check for full line
@@ -177,17 +177,17 @@ public class GameManager : MonoBehaviour {
         InLine = new Address3[SomeValues.InLineLength];
 
         //Check second way
-        InLine[0] = ItCube.sides[address.Side].fragments[0, address.Col].address;
+        InLine[0] = new Address3(address.Side, 0, address.Col);
         for (int i = 1, f = 1; i < SomeValues.SideSize && f < InLine.Length; i++)
         {
             if (
                 ItCube.sides[InLine[f-1].Side].fragments[i, InLine[f-1].Col].value == 0 || ItCube.sides[InLine[f-1].Side].fragments[i, InLine[f-1].Col].value == 1 ||
-                ItCube.sides[InLine[0].Side].fragments[InLine[0].Row, InLine[0].Col].color != ItCube.sides[InLine[0].Side].fragments[i, InLine[0].Col].color ||
+                ItCube.sides[InLine[0].Side].fragments[InLine[0].Row, InLine[0].Col].GetColor() != ItCube.sides[InLine[0].Side].fragments[i, InLine[0].Col].GetColor() ||
                 ItCube.sides[InLine[0].Side].fragments[InLine[0].Row, InLine[0].Col].value != ItCube.sides[InLine[0].Side].fragments[i, InLine[0].Col].value
                 )
                 f = 0;
-                        
-            InLine[f] = ItCube.sides[InLine[0].Side].fragments[i, InLine[0].Col].address;
+
+            InLine[f] = new Address3(address.Side, i, address.Col);
             f++;
         }
         if (InLine[InLine.Length - 1] != null) //Check for full line
@@ -203,7 +203,7 @@ public class GameManager : MonoBehaviour {
     {
         foreach(ItFragment fragment in ItCube.sides[address.Side].fragments)
         {
-            if (fragment.value < 1 || fragment.color != ItCube.sides[address.Side].fragments[address.Row,address.Col].color) return false;
+            if (fragment.value < 1 || fragment.GetColor() != ItCube.sides[address.Side].fragments[address.Row,address.Col].GetColor()) return false;
         }
         return true;
     }
@@ -222,6 +222,8 @@ public class GameManager : MonoBehaviour {
     {
         if(CheckForFullSide(address))
             SidesControll(address);
+
+        SaveLoad.Save();
     }
 
     //Removing Colors \ Checking for full cube
@@ -235,9 +237,10 @@ public class GameManager : MonoBehaviour {
                     return;
             }
             GameObject.FindGameObjectWithTag("CongratulationScreen").GetComponent<Canvas>().enabled = true;
+            SaveLoad.Save();
         }
         else
-            lColors.Remove(ItCube.sides[address.Side].fragments[0, 0].color);
+            lColors.Remove(ItCube.sides[address.Side].fragments[0, 0].GetColor());
     }
 
 }

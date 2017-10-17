@@ -32,13 +32,13 @@ public class Magic : MonoBehaviour {
 
     public static void MagicHere(Address3 address)
     {
-        if (NowInMagic == ItCube.sides[address.Side].fragments[address.Row, address.Col].color)
+        if (NowInMagic == ItCube.sides[address.Side].fragments[address.Row, address.Col].GetColor())
         {
             PointsToGetMagic++;
         }
         else
         {
-            NowInMagic = ItCube.sides[address.Side].fragments[address.Row, address.Col].color;
+            NowInMagic = ItCube.sides[address.Side].fragments[address.Row, address.Col].GetColor();
             PointsToGetMagic = 0;
         }
 
