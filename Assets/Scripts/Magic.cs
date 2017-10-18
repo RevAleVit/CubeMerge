@@ -9,7 +9,7 @@ public class Magic : MonoBehaviour {
     [SerializeField] private UnityEngine.UI.Image bImage;
     private UnityEngine.UI.Text bText;
     
-    private static int MagicsCount;
+    public static int MagicsCount { get; set; }
     private static Color NowInMagic;
     private static int PointsToGetMagic;
     private static int WayTomagic = 3;

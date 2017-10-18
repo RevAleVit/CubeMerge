@@ -2,27 +2,48 @@
 using System.IO;
 using UnityEngine;
 
-public static class SaveLoad{
+public static class SaveLoad {
 
-    public static void Save()//CubeState Params)
+    [System.Serializable]
+    private class SavesCollection
     {
+        public ItSide[] CubeState { get; set; }
+        public int MagicCount { get; set; }
+
+        public SavesCollection()
+        {
+            CubeState = ItCube.sides;
+            MagicCount = Magic.MagicsCount;
+        }
+    }
+
+    public static void Save()
+    {
+        SavesCollection ForSaveNow = new SavesCollection();
+
         BinaryFormatter bf = new BinaryFormatter();
-        FileStream file = File.Create(Application.persistentDataPath + "Cube.cp");
-        bf.Serialize(file, ItCube.sides);//Params);
+        FileStream file = File.Create(Application.persistentDataPath + "/Cube.cp");
+        bf.Serialize(file, ForSaveNow);
         file.Close();
     }
 
     public static bool Load()
     {
-        //ItSide[] value = new ItSide[]();
-
-        if (File.Exists(Application.persistentDataPath + "Cube.cp"))
+        if (File.Exists(Application.persistentDataPath + "/Cube.cp"))
         {
-
             BinaryFormatter bf = new BinaryFormatter();
-            FileStream file = File.Open(Application.persistentDataPath + "Cube.cp", FileMode.Open);
-            ItCube.sides = (ItSide[])bf.Deserialize(file);
+            FileStream file = File.Open(Application.persistentDataPath + "/Cube.cp", FileMode.Open);
+            SavesCollection Loaded;
+            try
+            {
+                Loaded = (SavesCollection)bf.Deserialize(file);
+            }
+            catch { return false; }
+
             file.Close();
+
+            ItCube.sides = Loaded.CubeState;
+            Magic.MagicsCount = Loaded.MagicCount;
         }
         else
             return false;
