@@ -28,6 +28,11 @@ public class GameManager : MonoBehaviour {
         Draw();
 
         lColors = new List<Color>(SomeValues.ColorsList);
+
+        //Load Difficult Level
+        if (!PlayerPrefs.HasKey("Difficult"))
+            PlayerPrefs.SetFloat("Difficult", 0.25f);
+        SomeValues.StartFrom = PlayerPrefs.GetFloat("Difficult");
     }
 
     private void Fill()

@@ -1350,6 +1350,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38dca4800a40c614897ba5081bcb917f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DifficultSlider: {fileID: 1985018310}
 --- !u!1 &1779514949
 GameObject:
   m_ObjectHideFlags: 0
@@ -1502,7 +1503,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1778370030}
-        m_MethodName: Dificult
+        m_MethodName: Difficult
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 1985018310}
