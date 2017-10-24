@@ -17,17 +17,19 @@ public static class SomeValues
 }
 
 public class GameManager : MonoBehaviour {
-    private static List<Color> lColors;
+    public static List<Color> lColors;
 
     private static bool FirstSceneOpen = true;
     // Use this for initialization
     void Start () {
-        if(!FirstSceneOpen || !SaveLoad.Load())
-            Fill();
-        FirstSceneOpen = false;
-        Draw();
+        if (!FirstSceneOpen || !SaveLoad.Load())
+        {
+            lColors = new List<Color>(SomeValues.ColorsList);
+            Fill();            
+        }
 
-        lColors = new List<Color>(SomeValues.ColorsList);
+        FirstSceneOpen = false;
+        Draw();        
 
         //Load Difficult Level
         if (!PlayerPrefs.HasKey("Difficult"))
